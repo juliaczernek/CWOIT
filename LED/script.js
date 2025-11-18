@@ -1,20 +1,31 @@
 let video; 
 let bodyPose;
 let poses = [];
-let timer = false;
+let tiles = [];
+let canvasHeight = 500;
+let canvasWidth = 500;
+let zonesX = 5;
+let zonesY = 2;
+let tileWidth = canvasWidth / zonesX;
+let tileHeight = canvasHeight / zonesY;
+let ledPins = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+let leds = [];
 
-let ledRed;
-let ledGreen;
-let ledWhite;
-let ledBlue;
-let ledYellow;
+function generateTiles(){
+    let indexLed = 0;
+    for (let y = 1; y < canvasHeight; y += canvasHeight / zonesY){
+        for (let x =1; x < canvasWidth; x += canvasWidth / zonesX){
+            tiles.push({
+                x: x,
+                y: y,
+                currentlyOn: false,
+                attachedLed: indexLed
+            });
+            indexLed++;
+        }
+    }
+}
 
-
-let ledRed2;
-let ledGreen2;
-let ledWhite2;
-let ledBlue2;
-let ledYellow2;
 
 function preload() {
     bodyPose = ml5.bodyPose();
@@ -22,7 +33,7 @@ function preload() {
 }
 
 function setup() {
-    createCanvas(500, 500).parent("sketch-container");
+    createCanvas(canvasWidth, canvasHeight).parent("sketch-container");
     frameRate(15); 
     video = createCapture(VIDEO);
     video.hide();
@@ -32,32 +43,15 @@ function setup() {
         poses = results;
     })
         
-    ledRed = new five.Led(8);
-    ledGreen = new five.Led(10);
-    ledWhite = new five.Led(12);
-    ledBlue = new five.Led(9);
-    ledYellow = new five.Led(11);
+    generateTiles();
+    tiles.forEach(tile =>{
+        fill(100);
+        rect(tile.x, tile.y, tileWidth, tileHeight);
+    });
 
-
-    ledRed2 = new five.Led(6);
-    ledGreen2 = new five.Led(4);
-    ledWhite2 = new five.Led(2);
-    ledBlue2 = new five.Led(5);
-    ledYellow2 = new five.Led(3);
+    leds = new five.Leds(ledPins);
 }
 
-function ledOff(){
-    ledRed.off();
-    ledGreen.off();
-    ledWhite.off();
-    ledBlue.off();
-    ledYellow.off();
-    ledRed2.off();
-    ledGreen2.off();
-    ledWhite2.off();
-    ledBlue2.off();
-    ledYellow2.off();
-}
 
 
 function draw() {
@@ -72,53 +66,34 @@ function draw() {
     
 
     if(poses.length>0){
-        timer = false;
-
         let wristX = poses[0].right_wrist.x;
         let wristY = poses[0].right_wrist.y;
-        ledRed.off();
-        ledGreen.off();
-        ledWhite.off();
-        ledBlue.off();
-        ledYellow.off();
-        ledRed2.off();
-        ledGreen2.off();
-        ledWhite2.off();
-        ledBlue2.off();
-        ledYellow2.off();
 
-        if (wristX > 0 && wristX <100 && wristY> 0 && wristY<250){
-            ledRed.on();
-        }else if(wristX > 100 && wristX <200 && wristY >0 && wristY <250){
-            ledBlue.on();
-        }else if(wristX > 200 && wristX <300 && wristY >0 && wristY <250){
-            ledGreen.on();
-        }else if(wristX > 300 && wristX <400 && wristY >0 && wristY <250){
-            ledYellow.on();
-        }else if(wristX > 400 && wristX <500 && wristY >0 && wristY <250){
-            ledWhite.on();
-        }else if(wristX > 0 && wristX <100 && wristY >250 && wristY<500){
-            ledRed2.on();
-        }else if(wristX > 100 && wristX <200 && wristY >250 && wristY<500){
-            ledBlue2.on();
-        }else if(wristX > 200 && wristX <300 && wristY >250 && wristY<500){
-            ledGreen2.on();
-        }else if(wristX > 300 && wristX <400 && wristY >250 && wristY<500){
-            ledYellow2.on();
-        }else{
-            ledWhite2.on();
+        tiles.forEach(tile => {
+        if(wristX > tile.x && wristX < tile.x + tileWidth){
+            if(wristY > tile.y && wristY < tile.y + tileHeight){
+                if(!tile.currentlyOn){
+                    console.log("You entered tile at position: ", tile.x, tile.y);
+                    leds[tile.attachedLed].on();
+                    setTimeout(() =>{
+                        leds[tile.attachedLed].off();
+                        tile.currentlyOn = false;
+                    }, 3000);
+                    tile.currentlyOn = true;
+                }
+            }
         }
-    }else if(!timer){
-        timer = true;
-        setTimeout(ledOff, 5000);
+    })
+    
     }
-}
+
+    
 
 // p5 funciton
 function mousePressed(){
     console.log(poses);
 }
 
-
+}
 
             

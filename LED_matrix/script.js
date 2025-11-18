@@ -15,13 +15,10 @@ let tileHeight = canvasHeight / zonesY;
 
 let leds;
 
-
-
-
 function generateTiles() {
     let indexLed = 0;
-    for (let y = 1; y < canvasHeight; y += canvasHeight / zonesY) {             // we create 2 rows
-        for (let x = 1; x < canvasWidth; x += canvasWidth / zonesX) {           // we create 5 columns for each row
+    for (let y = 1; y < canvasHeight; y += canvasHeight / zonesY) {
+        for (let x = 1; x < canvasWidth; x += canvasWidth / zonesX) {
             tiles.push({
                 x: x, 
                 y: y,
@@ -54,7 +51,6 @@ function setup() {
     });
 
     bodyPose.detectStart(video, function(results){
-        // store the results in a global (poses) variable
         poses = results;
     })
 
@@ -106,7 +102,7 @@ function draw() {
     }
 }
 
-// p5 funciton
+
 function mousePressed(){
     console.log(poses);
 }
