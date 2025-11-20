@@ -1,15 +1,15 @@
 #include <Adafruit_NeoPixel.h>
 #include <multiBuzzer.h>
 
-int ledStrip = 3;
+int ledStrip =11;
 
-int lightPin1 = 11;
-int lightPin2 = 10;
-int lightPin3 = 12;
+int lightPin1 = A0;
+int lightPin2 = A1;
+int lightPin3 = A2 ;
 
-int buzzerPin1 = 9;
-int buzzerPin2 = 5;
-int buzzerPin3 = 6;
+int buzzerPin1 = 10;
+int buzzerPin2 = 9;
+int buzzerPin3 = 8;
 
 int lightValue1 = 0;
 int lightValue2 = 0;
@@ -17,24 +17,27 @@ int lightValue3 = 0;
 
 
 
-#define LED_COUNT 33
+#define LED_COUNT 12
 #define BRIGHTNESS 20
 
 Adafruit_NeoPixel strip(LED_COUNT, ledStrip, NEO_GRB + NEO_KHZ800);
 MultiBuzzer buzzerManager;
 
-const uint8_t buzzerPins[3] = {9, 5, 6};
+const uint8_t buzzerPins[3] = {10, 9, 8};
 
 const uint16_t buzzerFreqs[3] = {
-  262, // for buzzer 1
-  440,  // for buzzer 2
-  330
+  330, // for buzzer 1
+  350,  // for buzzer 2
+  392
 
 };
 
 uint32_t red = strip.Color(255, 0, 0);
+uint32_t yellow = strip.Color(255, 255, 0);
 uint32_t green = strip.Color(0, 255, 0);
 uint32_t blue = strip.Color(0, 0, 255);
+uint32_t purple = strip.Color(188, 0, 255);
+uint32_t orange = strip.Color(255, 119, 0);
 
 void setup() {
   Serial.begin(9600);
@@ -51,9 +54,9 @@ void setup() {
 
 void loop() {
 
-  lightValue1 = digitalRead(lightPin1);
-  lightValue2 = digitalRead(lightPin2);
-  lightValue3 = digitalRead(lightPin3);
+  lightValue1 = analogRead(lightPin1);
+  lightValue2 = analogRead(lightPin2);
+  lightValue3 = analogRead(lightPin3);
   
   Serial.print("lightValue1: ");
   Serial.print(lightValue1);
@@ -64,24 +67,24 @@ void loop() {
   
   strip.clear();
   
-  if (lightValue1 == 1) {
+  if (lightValue1 > 680) {
     buzzerManager.setFrequency(0, buzzerFreqs[0]);
-    strip.fill(red, 0, 10);   
+    strip.fill(green, 0, 3);   
   } else {
     buzzerManager.stop(0);
   }
   
 
-  if (lightValue2 == 1) {
+  if (lightValue2 > 890) {
     buzzerManager.setFrequency(1, buzzerFreqs[1]);
-    strip.fill(blue, 11, 10);
+    strip.fill(blue, 3, 6);
   } else {
     buzzerManager.stop(1);
   }
 
-  if (lightValue3 == 1) {
+  if (lightValue3 > 680) {
     buzzerManager.setFrequency(2, buzzerFreqs[2]);
-    strip.fill(green, 22, 10);
+    strip.fill(purple, 9, 3);
   } else {
     buzzerManager.stop(2);
   }

@@ -1,3 +1,7 @@
+// 
+// 
+// 
+// 
 // code prototype for the working piano with only one sensor and buzzer
 
 
